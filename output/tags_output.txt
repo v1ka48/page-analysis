@@ -1,0 +1,4 @@
+{
+    "og:title": "Companies",
+    "og:description": "Protect your business with bug bounty, pentesting as a service and live hacking events from Europe\u2019s leading provider."
+}

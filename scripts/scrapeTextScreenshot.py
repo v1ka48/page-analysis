@@ -16,12 +16,30 @@ def setup_driver():
     service = Service(ChromeDriverManager().install())
     return webdriver.Chrome(service=service, options=options)
 
+def getMetaTags(url, output_tags_path):
+    response = requests.get(url)
+    response.raise_for_status()
+    soup = BeautifulSoup(response.text, 'html.parser')
+    properties_of_interest = ['og:title', 'og:description', 'title', 'description']
+    meta_tags = soup.find_all('meta')
+    meta_tags_dict = {}
+    
+    for tag in meta_tags:
+        if tag.get('property', '').strip() in properties_of_interest:
+            meta_tags_dict[tag.get('property', '')] = tag.get('content', '')
+
+    with open(output_tags_path, "w", encoding='utf-8') as file:
+        file.write(json.dumps(meta_tags_dict, indent=4))
+        
+    return meta_tags_dict
+
 def scrape_text(url, output_text_path):
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
     content = []
-    tags_of_interest = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a', 'meta']
+    tags_of_interest = ['p', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'a']
+
     for tag in soup.find_all(tags_of_interest):
         if tag.name == 'a' and (not tag.get('href', '').strip() or not tag.get_text(strip=True)):
             continue
@@ -29,35 +47,44 @@ def scrape_text(url, output_text_path):
             content.append('CTA Button: ' + tag.get_text(strip=True))
         else:
             content.append(tag.get_text(strip=True))
+
     with open(output_text_path, "w", encoding='utf-8') as file:
         for item in content:
             file.write(item + '\n\n')
+
     return content
 
 def take_screenshot(driver, url, output_image_path):
     driver.get(url)
     time.sleep(4)
-    new_height = driver.execute_script("return document.body.scrollHeight")
-    last_height = 0
-    while True:
-        new_height = driver.execute_script("return document.body.scrollHeight")
-        if new_height == last_height:
-            break
-        last_height = new_height
-        time.sleep(1)
+
+    total_height = int(driver.execute_script("return document.body.scrollHeight"))
+    viewport_height = int(driver.execute_script("return window.innerHeight"))
+    scrolls = total_height // viewport_height
+
+    for scroll in range(scrolls + 1):
+        driver.execute_script(f"window.scrollTo(0, {scroll * viewport_height});")
+        time.sleep(2)
+
     result = driver.execute_cdp_cmd("Page.captureScreenshot", {"format": "png", "fromSurface": True, "captureBeyondViewport": True})
     with open(output_image_path, "wb") as file:
         file.write(base64.b64decode(result['data']))
     driver.quit()
 
 def scrapeTextScreenshot(url):
+    output_tags_path = "../output/tags_output.txt"
     output_text_path = "../output/text_output.txt"
     output_image_path = "../output/full_screenshot.png"
     driver = setup_driver()
+
+    metaTags = getMetaTags(url, output_tags_path)
     content = scrape_text(url, output_text_path)
     take_screenshot(driver, url, output_image_path)
+
     print('Scraped text and took screenshot!')
 
 if __name__ == "__main__":
-    url = sys.argv[1]
-    scrapeTextScreenshot(url)
+    if len(sys.argv) > 1:
+        scrapeTextScreenshot(sys.argv[1])
+    else:
+        scrapeTextScreenshot('https://www.intigriti.com/companies')
