@@ -9,7 +9,7 @@ app.use(cors({
 
 app.get('/run-script', (req, res) => {
   const url = req.query.url;
-  exec(`python3 ../scripts/scrapeTextScreenshot.py "${url}"`, (error, stdout) => {
+  exec(`python3 ../scripts/pageAnalysis.py "${url}"`, (error, stdout) => {
     if (error) {
       console.error(`exec error: ${error}`);
       return res.status(500).json({ error: 'Failed to run script' });

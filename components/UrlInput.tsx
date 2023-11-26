@@ -1,8 +1,12 @@
+"use client";
+
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 
-import { Text, Divider, TextInput, Button } from "@tremor/react";
+import { SearchIcon } from "@heroicons/react/outline";
+import { Text, TextInput, Button } from "@tremor/react";
+import ErrorWarning from "./ErrorWarning";
 
 interface Values {
   url: string;
@@ -25,7 +29,7 @@ export default function UrlInput() {
   }
 
   return (
-    <div>
+    <div className="space-y-4">
       <Formik
         initialValues={{ url: "" }}
         validationSchema={validationSchema}
@@ -33,17 +37,18 @@ export default function UrlInput() {
       >
         {(formik) => (
           <Form>
-            <Text>Enter URL</Text>
-            <Field
-              as={TextInput}
-              type="url"
-              name="url"
-              placeholder="https://www.google.com/?client=safari"
-            />
-            <ErrorMessage name="url" component="div" />
-            <Button type="submit" size="xl">
-              Analyze
-            </Button>
+            <div className="flex-col space-y-2">
+              <Text>Enter URL</Text>
+              <Field
+                as={TextInput}
+                type="url"
+                name="url"
+                placeholder="https://www.google.com/?client=safari"
+              />
+              <Button icon={SearchIcon} type="submit" variant="primary">
+                Analyze
+              </Button>
+            </div>
           </Form>
         )}
       </Formik>

@@ -3,11 +3,15 @@ import time
 import json
 import base64
 import sys
+from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+from openai import OpenAI
+
+load_dotenv()
 
 def setup_driver():
     options = Options()
@@ -30,8 +34,6 @@ def getMetaTags(url, output_tags_path):
 
     with open(output_tags_path, "w", encoding='utf-8') as file:
         file.write(json.dumps(meta_tags_dict, indent=4))
-        
-    return meta_tags_dict
 
 def scrape_text(url, output_text_path):
     response = requests.get(url)
@@ -52,8 +54,6 @@ def scrape_text(url, output_text_path):
         for item in content:
             file.write(item + '\n\n')
 
-    return content
-
 def take_screenshot(driver, url, output_image_path):
     driver.get(url)
     time.sleep(4)
@@ -64,7 +64,7 @@ def take_screenshot(driver, url, output_image_path):
 
     for scroll in range(scrolls + 1):
         driver.execute_script(f"window.scrollTo(0, {scroll * viewport_height});")
-        time.sleep(2)
+        time.sleep(1)
 
     result = driver.execute_cdp_cmd("Page.captureScreenshot", {"format": "png", "fromSurface": True, "captureBeyondViewport": True})
     with open(output_image_path, "wb") as file:
@@ -77,14 +77,43 @@ def scrapeTextScreenshot(url):
     output_image_path = "../output/full_screenshot.png"
     driver = setup_driver()
 
-    metaTags = getMetaTags(url, output_tags_path)
-    content = scrape_text(url, output_text_path)
+    getMetaTags(url, output_tags_path)
+    scrape_text(url, output_text_path)
     take_screenshot(driver, url, output_image_path)
 
-    print('Scraped text and took screenshot!')
+def analysePage():
+    with open('../output/text_output.txt', 'r') as file:
+        text = file.read().replace('\n', ' ')
+    with open('../output/tags_output.txt', 'r') as file:
+        tags = json.load(file)
+    with open('../output/full_screenshot.png', 'rb') as file:
+        image = base64.b64encode(file.read()).decode('utf-8')
+    with open('../output/prompt.txt', 'r') as file:
+        prompt = file.read().replace('\n', ' ')
+
+    openai = OpenAI()
+
+    response = openai.chat.completions.create(
+        model="gpt-4",
+        n=1,
+        stream=False,
+        messages=[
+            {"role": "system", "content": "You are a web page analyst."},
+            {"role": "assistant", "content": 'Hello! What page would you like me to expect today?'},
+            {"role": "user", "content": 'Here is the text from the page: ' + text},
+            {"role": "assistant", "content": "Thank you for that. What are the title and meta description tags on the page?"},
+            {"role": "user", "content": 'The title and meta desciptions tags are: ' + text},
+            {"role": "assistant", "content": 'Great! What would you want to know based on the information you have provided?'},
+            {"role": "user", "content": prompt},
+        ]
+    )
+    with open("../output/response.txt", "w", encoding='utf-8') as file:
+        file.write(response.choices[0].message.content)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
         scrapeTextScreenshot(sys.argv[1])
+        analysePage()
     else:
-        scrapeTextScreenshot('https://www.intigriti.com/companies')
+        analysePage()
