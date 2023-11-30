@@ -9,6 +9,7 @@ from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 import traceback 
+import os
 
 def save_html(url, output_html_path):
     response = requests.get(url)
@@ -93,7 +94,7 @@ def scrapeTextScreenshot(url):
     output_image_path = "../output/full_screenshot.png"
     driver = setup_driver()
 
-    output_html_path = r"C:\Coding\page-analysis\output\page.html"   # Define the path for the HTML output
+    output_html_path = "../output/page.html"  
     print(f'Saving HTML content to: {os.path.abspath(output_html_path)}')
 
     print('Saving HTML content...')
