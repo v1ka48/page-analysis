@@ -3,28 +3,15 @@ import time
 import json
 import base64
 import sys
+from dotenv import load_dotenv
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
-import traceback 
-import os
+from openai import OpenAI
 
-def save_html(url, output_html_path):
-    response = requests.get(url)
-    response.raise_for_status()
-    
-        # Print the first 100 characters of the HTML content to verify it's correct
-    print(response.text[:100])  # This prints a snippet of the HTML for verification
-    
-    # Use 'with' statement to open the file, write content, and then flush and close the file
-    with open(output_html_path, "w", encoding='utf-8') as file:
-        file.write(response.text)
-        file.flush()  # Ensure all data is flushed to the file buffer
-    # The 'with' block ensures the file is closed properly
-
-    return response.text
+load_dotenv()
 
 def setup_driver():
     options = Options()
@@ -47,8 +34,6 @@ def getMetaTags(url, output_tags_path):
 
     with open(output_tags_path, "w", encoding='utf-8') as file:
         file.write(json.dumps(meta_tags_dict, indent=4))
-        
-    return meta_tags_dict
 
 def scrape_text(url, output_text_path):
     response = requests.get(url)
@@ -69,7 +54,11 @@ def scrape_text(url, output_text_path):
         for item in content:
             file.write(item + '\n\n')
 
-    return content
+def scrape_html(url, output_html_path):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    with open(output_html_path, "w", encoding='utf-8') as file:
+        file.write(soup.prettify())
 
 def take_screenshot(driver, url, output_image_path):
     driver.get(url)
@@ -81,40 +70,57 @@ def take_screenshot(driver, url, output_image_path):
 
     for scroll in range(scrolls + 1):
         driver.execute_script(f"window.scrollTo(0, {scroll * viewport_height});")
-        time.sleep(2)
+        time.sleep(1)
 
     result = driver.execute_cdp_cmd("Page.captureScreenshot", {"format": "png", "fromSurface": True, "captureBeyondViewport": True})
     with open(output_image_path, "wb") as file:
         file.write(base64.b64decode(result['data']))
     driver.quit()
 
-def scrapeTextScreenshot(url):
+def scrapeUrl(url):
     output_tags_path = "../output/tags_output.txt"
     output_text_path = "../output/text_output.txt"
+    output_html_path = "../output/html_output.txt"
     output_image_path = "../output/full_screenshot.png"
     driver = setup_driver()
 
-    output_html_path = "../output/page.html"  
-    print(f'Saving HTML content to: {os.path.abspath(output_html_path)}')
-
-    print('Saving HTML content...')
-    try:
-        html_content = save_html(url, output_html_path)
-        print(f'HTML content snippet: {html_content[:100]}')
-        print('HTML content saved.')
-    except Exception as e:
-        print(f'An error occurred while saving HTML content: {e}')
-
-
-    metaTags = getMetaTags(url, output_tags_path)
-    content = scrape_text(url, output_text_path)
+    scrape_html(url, output_html_path)
+    scrape_text(url, output_text_path)
+    getMetaTags(url, output_tags_path)
     take_screenshot(driver, url, output_image_path)
 
-    print('Scraped text and took screenshot!')
+def analysePage():
+    with open('../output/text_output.txt', 'r') as file:
+        html = file.read().replace('\n', ' ')
+    with open('../output/tags_output.txt', 'r') as file:
+        tags = file.read().replace('\n', ' ')
+    with open('../output/text_output.txt', 'r') as file:
+        text = file.read().replace('\n', ' ')
+    with open('../output/prompt.txt', 'r') as file:
+        prompt = file.read().replace('\n', ' ')
+
+    openai = OpenAI()
+
+    response = openai.chat.completions.create(
+        model="gpt-4",
+        n=1,
+        stream=False,
+        messages=[
+            {"role": "system", "content": "You are a helpful, professional web page analyst. You have to: \n\n" + prompt},
+            # {"role": "user", "content": 'Here is the html of the web page I want you to analyse for me: ' + html},
+            {"role": "user", "content": 'Here are the text and meta tags of the web page I want you to analyse for me: ' + text + tags}
+        ]
+    )
+    with open("../output/response.txt", "w", encoding='utf-8') as file:
+        file.write(response.choices[0].message.content)
+
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        scrapeTextScreenshot(sys.argv[1])
+        # scrapeUrl(sys.argv[1])
+        # analysePage()
+        with open('../output/output.txt', 'r') as file:
+            output = file.read()
+        print(output)
     else:
-        scrapeTextScreenshot('https://www.intigriti.com/companies')
-
+        analysePage()

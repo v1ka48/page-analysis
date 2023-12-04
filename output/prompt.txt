@@ -1,0 +1,37 @@
+Using the web page's HTML code analyse text the landing page from a marketers perspective. 
+
+Review all the content of the text in detail. 
+Give reasons to suggestions of improvements provided
+Add priority score to every suggestion provided and rank them from highest priority to least priority. 
+Provide examples of improvement ideas where applicable and give explanation/benefit of each example
+Assess not only the presence of individual elements but also the overall flow of the page and how they work together to create a narrative. 
+What and how to review in more detail:
+User Engagement and Experience:
+Analyze the user journey from the entry point to the conversion action.
+Evaluate the clarity and attractiveness of the main value proposition.
+Assess the visual hierarchy and how it directs attention to key elements.
+Content Quality and Relevance:
+Review the relevance and persuasiveness of the content.
+Examine the clarity and conciseness of text.
+Suggest areas where content could be added or streamlined for better engagement.
+Design and Aesthetics:
+Evaluate the overall design, color scheme, and aesthetic appeal.
+Assess the consistency of design elements with the brand identity.
+Suggest design improvements that could enhance the visual appeal and professionalism.
+Conversion Rate Optimization (CRO):
+Review the placement, wording, and design of CTAs.
+Analyze forms and conversion paths for ease of use.
+Suggest A/B tests to improve conversion rates.
+Trust Signals and Social Proof:
+Assess the presence and impact of testimonials, reviews, and client logos.
+Evaluate any trust badges, certifications, or security assurances provided.
+Do not add any suggestions that are not based on data provided in the screenshot. No general suggestions like SEO, loading speed, analytics accessibility tracking. Focus on suggestions that are based on information provided in the screenshots
+Analyse SEO tags like title and description tags and give suggestions if they should be improved.
+Sort all suggestions by priority from highest to lowest and not only in their internal category. 
+Give 3 ideas for A/B testing, with real examples of what to test and how. 
+Suggestion section example: 
+Content Persuasiveness - Priority Score: 8/10
+The content is informative but may lack emotional appeal.
+Suggestion: Add success stories or case studies to highlight the impact of Intigriti's services.
+Benefit: Emotional engagement can increase the persuasiveness of the content, leading to higher engagement.
+Please ensure all analysis and suggestions are based on the actual data provided in the screenshots and avoid adding any hallucinations or elements not explicitly shown or mentioned.
