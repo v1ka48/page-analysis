@@ -8,22 +8,24 @@ import { Text, TextInput, Button } from "@tremor/react";
 import { on } from "events";
 
 export default function UrlInput({ onDataFetch }: any) {
-  let passcodes = [243792, 543025, 123456, 654321, 987654, 123789, 199042];
   const handleSubmit = async (values: Values) => {
-    if (passcodes.includes(Number(values.passcode))) {
-      try {
-        const response = await fetch(
-          `/api/getPageAnalysis/route?url=${encodeURIComponent(values.url)}`
-        );
-        const data = await response.json();
-        onDataFetch({ data });
-      } catch (error) {
-        console.log(error);
+    onDataFetch("");
+    try {
+      const checkPasscode = await fetch(
+        `/api/checkPasscode/route?passcode=${values.passcode}`
+      );
+      const passcode = await checkPasscode.json();
+      if (!passcode.valid) {
+        alert("Invalid or used passcode");
+        return;
       }
-      if (Number(values.passcode) !== 199042)
-        passcodes = passcodes.filter((item) => item !== values.passcode);
-    } else {
-      alert("Invalid passcode");
+      const response = await fetch(
+        `/api/getPageAnalysis/route?url=${encodeURIComponent(values.url)}`
+      );
+      const data = await response.json();
+      onDataFetch({ data });
+    } catch (error) {
+      console.log(error);
     }
   };
 
