@@ -1,4 +1,4 @@
-Analyse text of a landing page from a marketers perspective. 
+Using the web page's HTML code analyse text the landing page from a marketers perspective. 
 
 Review all the content of the text in detail. 
 Give reasons to suggestions of improvements provided

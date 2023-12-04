@@ -82,12 +82,8 @@ def scrapeTextScreenshot(url):
     take_screenshot(driver, url, output_image_path)
 
 def analysePage():
-    with open('../output/text_output.txt', 'r') as file:
-        text = file.read().replace('\n', ' ')
-    with open('../output/tags_output.txt', 'r') as file:
-        tags = json.load(file)
-    with open('../output/full_screenshot.png', 'rb') as file:
-        image = base64.b64encode(file.read()).decode('utf-8')
+    with open('../output/html_output.txt', 'r') as file:
+        html = file.read().replace('\n', ' ')
     with open('../output/prompt.txt', 'r') as file:
         prompt = file.read().replace('\n', ' ')
 
@@ -98,13 +94,8 @@ def analysePage():
         n=1,
         stream=False,
         messages=[
-            {"role": "system", "content": "You are a web page analyst."},
-            {"role": "assistant", "content": 'Hello! What page would you like me to expect today?'},
-            {"role": "user", "content": 'Here is the text from the page: ' + text},
-            {"role": "assistant", "content": "Thank you for that. What are the title and meta description tags on the page?"},
-            {"role": "user", "content": 'The title and meta desciptions tags are: ' + text},
-            {"role": "assistant", "content": 'Great! What would you want to know based on the information you have provided?'},
-            {"role": "user", "content": prompt},
+            {"role": "system", "content": "You are a helpful, professional web page analyst. You have to: \n\n" + prompt},
+            {"role": "user", "content": 'Here is the html of the web page I want you to analyse for me: ' + html},
         ]
     )
     with open("../output/response.txt", "w", encoding='utf-8') as file:
