@@ -13,6 +13,13 @@ from openai import OpenAI
 
 load_dotenv()
 
+OUTPUT_TAGS_PATH = "output/tags_output.txt"
+OUTPUT_TEXT_PATH  = "output/text_output.txt"
+OUTPUT_HTML_PATH  = "output/html_output.txt"
+OUTPUT_IMAGE_PATH  = "output/full_screenshot.png"
+OUTPUT_PROMPT_PATH = "output/prompt.txt"
+OUTPUT_PATH = "output/output.txt"
+
 def setup_driver():
     options = Options()
     options.headless = True
@@ -20,7 +27,7 @@ def setup_driver():
     service = Service(ChromeDriverManager().install())
     return webdriver.Chrome(service=service, options=options)
 
-def getMetaTags(url, output_tags_path):
+def getMetaTags(url, OUTPUT_TAGS_PATH):
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -32,10 +39,10 @@ def getMetaTags(url, output_tags_path):
         if tag.get('property', '').strip() in properties_of_interest:
             meta_tags_dict[tag.get('property', '')] = tag.get('content', '')
 
-    with open(output_tags_path, "w", encoding='utf-8') as file:
+    with open(OUTPUT_TAGS_PATH, "w", encoding='utf-8') as file:
         file.write(json.dumps(meta_tags_dict, indent=4))
 
-def scrape_text(url, output_text_path):
+def scrape_text(url, OUTPUT_TEXT_PATH ):
     response = requests.get(url)
     response.raise_for_status()
     soup = BeautifulSoup(response.text, 'html.parser')
@@ -50,17 +57,17 @@ def scrape_text(url, output_text_path):
         else:
             content.append(tag.get_text(strip=True))
 
-    with open(output_text_path, "w", encoding='utf-8') as file:
+    with open(OUTPUT_TEXT_PATH , "w", encoding='utf-8') as file:
         for item in content:
             file.write(item + '\n\n')
 
-def scrape_html(url, output_html_path):
+def scrape_html(url, OUTPUT_HTML_PATH ):
     response = requests.get(url)
     soup = BeautifulSoup(response.text, "html.parser")
-    with open(output_html_path, "w", encoding='utf-8') as file:
+    with open(OUTPUT_HTML_PATH , "w", encoding='utf-8') as file:
         file.write(soup.prettify())
 
-def take_screenshot(driver, url, output_image_path):
+def take_screenshot(driver, url, OUTPUT_IMAGE_PATH ):
     driver.get(url)
     time.sleep(4)
 
@@ -73,30 +80,26 @@ def take_screenshot(driver, url, output_image_path):
         time.sleep(1)
 
     result = driver.execute_cdp_cmd("Page.captureScreenshot", {"format": "png", "fromSurface": True, "captureBeyondViewport": True})
-    with open(output_image_path, "wb") as file:
+    with open(OUTPUT_IMAGE_PATH , "wb") as file:
         file.write(base64.b64decode(result['data']))
     driver.quit()
 
 def scrapeUrl(url):
-    output_tags_path = "../output/tags_output.txt"
-    output_text_path = "../output/text_output.txt"
-    output_html_path = "../output/html_output.txt"
-    output_image_path = "../output/full_screenshot.png"
     driver = setup_driver()
 
-    scrape_html(url, output_html_path)
-    scrape_text(url, output_text_path)
-    getMetaTags(url, output_tags_path)
-    take_screenshot(driver, url, output_image_path)
+    scrape_html(url, OUTPUT_HTML_PATH )
+    scrape_text(url, OUTPUT_TEXT_PATH )
+    getMetaTags(url, OUTPUT_TAGS_PATH)
+    take_screenshot(driver, url, OUTPUT_IMAGE_PATH )
 
 def analysePage():
-    with open('../output/text_output.txt', 'r') as file:
+    with open(OUTPUT_HTML_PATH, 'r') as file:
         html = file.read().replace('\n', ' ')
-    with open('../output/tags_output.txt', 'r') as file:
+    with open(OUTPUT_TAGS_PATH, 'r') as file:
         tags = file.read().replace('\n', ' ')
-    with open('../output/text_output.txt', 'r') as file:
+    with open(OUTPUT_TEXT_PATH, 'r') as file:
         text = file.read().replace('\n', ' ')
-    with open('../output/prompt.txt', 'r') as file:
+    with open(OUTPUT_PROMPT_PATH, 'r') as file:
         prompt = file.read().replace('\n', ' ')
 
     openai = OpenAI()
@@ -111,7 +114,7 @@ def analysePage():
             {"role": "user", "content": 'Here are the text and meta tags of the web page I want you to analyse for me: ' + text + tags}
         ]
     )
-    with open("../output/response.txt", "w", encoding='utf-8') as file:
+    with open(OUTPUT_PATH, "w", encoding='utf-8') as file:
         file.write(response.choices[0].message.content)
 
 
@@ -119,7 +122,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         # scrapeUrl(sys.argv[1])
         # analysePage()
-        with open('../output/output.txt', 'r') as file:
+        with open(OUTPUT_PATH, 'r') as file:
             output = file.read()
         print(output)
     else:

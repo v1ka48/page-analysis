@@ -28,7 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     "services/getPageAnalysis.js",
-    "routes/getPageAnalysis.js"
+    "routes/getPageAnalysis.js",
+    "pages/api/checkPasscode"
   ],
   "exclude": ["node_modules"]
 }

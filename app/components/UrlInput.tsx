@@ -3,40 +3,61 @@
 import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
-
 import { SearchIcon } from "@heroicons/react/outline";
 import { Text, TextInput, Button } from "@tremor/react";
-
-interface Values {
-  url: string;
-}
+import { on } from "events";
 
 export default function UrlInput({ onDataFetch }: any) {
-  const handleSubmit = (values: Values) => {
-    fetch(`http://localhost:8000/run-script?url=${values.url}`)
-      .then((response) => response.json())
-      .then((data) => onDataFetch(data))
-      .catch((error: any) => console.error("Fetch error:", error));
+  const handleSubmit = async (values: Values) => {
+    onDataFetch("");
+    try {
+      const checkPasscode = await fetch(
+        `/api/checkPasscode/route?passcode=${values.passcode}`
+      );
+      const passcode = await checkPasscode.json();
+      if (!passcode.valid) {
+        alert("Invalid or used passcode");
+        return;
+      }
+      const response = await fetch(
+        `/api/getPageAnalysis/route?url=${encodeURIComponent(values.url)}`
+      );
+      const data = await response.json();
+      onDataFetch({ data });
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const validationSchema = Yup.object().shape({
     url: Yup.string().url("Invalid URL format").required("URL is required"),
+    passcode: Yup.number()
+      .nullable("Invalid OTP format")
+      .required("Passcode is required"),
   });
 
   interface Values {
     url: string;
+    passcode: number;
   }
 
   return (
     <div className="space-y-4">
       <Formik
-        initialValues={{ url: "" }}
+        initialValues={{ url: "", passcode: "" }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
         {(formik) => (
           <Form>
             <div className="flex-col space-y-2">
+              <Text>One Time Passcode</Text>
+              <Field
+                as={TextInput}
+                type="passcode"
+                name="passcode"
+                placeholder="123456"
+              />
               <Text>Enter URL</Text>
               <Field
                 as={TextInput}
