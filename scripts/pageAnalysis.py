@@ -54,6 +54,12 @@ def scrape_text(url, output_text_path):
         for item in content:
             file.write(item + '\n\n')
 
+def scrape_html(url, output_html_path):
+    response = requests.get(url)
+    soup = BeautifulSoup(response.text, "html.parser")
+    with open(output_html_path, "w", encoding='utf-8') as file:
+        file.write(soup.prettify())
+
 def take_screenshot(driver, url, output_image_path):
     driver.get(url)
     time.sleep(4)
@@ -71,19 +77,25 @@ def take_screenshot(driver, url, output_image_path):
         file.write(base64.b64decode(result['data']))
     driver.quit()
 
-def scrapeTextScreenshot(url):
+def scrapeUrl(url):
     output_tags_path = "../output/tags_output.txt"
     output_text_path = "../output/text_output.txt"
+    output_html_path = "../output/html_output.txt"
     output_image_path = "../output/full_screenshot.png"
     driver = setup_driver()
 
-    getMetaTags(url, output_tags_path)
+    scrape_html(url, output_html_path)
     scrape_text(url, output_text_path)
+    getMetaTags(url, output_tags_path)
     take_screenshot(driver, url, output_image_path)
 
 def analysePage():
-    with open('../output/html_output.txt', 'r') as file:
+    with open('../output/text_output.txt', 'r') as file:
         html = file.read().replace('\n', ' ')
+    with open('../output/tags_output.txt', 'r') as file:
+        tags = file.read().replace('\n', ' ')
+    with open('../output/text_output.txt', 'r') as file:
+        text = file.read().replace('\n', ' ')
     with open('../output/prompt.txt', 'r') as file:
         prompt = file.read().replace('\n', ' ')
 
@@ -95,7 +107,8 @@ def analysePage():
         stream=False,
         messages=[
             {"role": "system", "content": "You are a helpful, professional web page analyst. You have to: \n\n" + prompt},
-            {"role": "user", "content": 'Here is the html of the web page I want you to analyse for me: ' + html},
+            # {"role": "user", "content": 'Here is the html of the web page I want you to analyse for me: ' + html},
+            {"role": "user", "content": 'Here are the text and meta tags of the web page I want you to analyse for me: ' + text + tags}
         ]
     )
     with open("../output/response.txt", "w", encoding='utf-8') as file:
@@ -104,7 +117,10 @@ def analysePage():
 
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        scrapeTextScreenshot(sys.argv[1])
-        analysePage()
+        # scrapeUrl(sys.argv[1])
+        # analysePage()
+        with open('../output/output.txt', 'r') as file:
+            output = file.read()
+        print(output)
     else:
         analysePage()

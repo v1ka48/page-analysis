@@ -1,5 +1,6 @@
 "use client";
 
+import React, { useState } from "react";
 import {
   Card,
   Text,
@@ -10,9 +11,16 @@ import {
   Callout,
 } from "@tremor/react";
 
+import UrlOutput from "../components/UrlOutput";
 import UrlInput from "../components/UrlInput";
 
 export default function Home() {
+  const [analysis, setAnalysis] = useState(null);
+
+  const handleData = (fetchedData) => {
+    setAnalysis(fetchedData);
+  };
+
   return (
     <main>
       <Card>
@@ -26,15 +34,9 @@ export default function Home() {
         results of the analysis.
       </Callout>
       <Card>
-        <UrlInput />
+        <UrlInput onDataFetch={handleData} />
       </Card>
-      <div className="mb-5">
-        <Callout className="h-24 mt-5" color="slate" title="Analysis Results">
-          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Phasellus
-          tempor lorem non est congue blandit. Praesent non lorem sodales,
-          suscipit est sed, hendrerit dolor.
-        </Callout>
-      </div>
+      {analysis && <UrlOutput analysis={analysis} />}
     </main>
   );
 }

@@ -1,6 +1,6 @@
 import React from "react";
 
-import { SunIcon } from "@heroicons/react/outline";
+import { SearchIcon } from "@heroicons/react/outline";
 
 function LoadingScreen() {
   return (
@@ -9,10 +9,9 @@ function LoadingScreen() {
     justify-center
     • text-slate-500"
     >
-      <SunIcon
-        className="h-24 w-24 animate-bounce
-    • text-yellow-500"
-        color="yellow"
+      <SearchIcon
+        className="h-24 w-24 animate-bounce mx-auto mt-10"
+        color="blue"
       />
       <h1 className="text-6xl font-bold text-center mb-10 animate-pulse">
         Loading Page Analysis

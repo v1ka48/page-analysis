@@ -6,17 +6,16 @@ import * as Yup from "yup";
 
 import { SearchIcon } from "@heroicons/react/outline";
 import { Text, TextInput, Button } from "@tremor/react";
-import ErrorWarning from "./ErrorWarning";
 
 interface Values {
   url: string;
 }
 
-export default function UrlInput() {
+export default function UrlInput({ onDataFetch }: any) {
   const handleSubmit = (values: Values) => {
     fetch(`http://localhost:8000/run-script?url=${values.url}`)
       .then((response) => response.json())
-      .then((data) => console.log(data))
+      .then((data) => onDataFetch(data))
       .catch((error: any) => console.error("Fetch error:", error));
   };
 
