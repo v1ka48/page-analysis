@@ -11,14 +11,14 @@ import {
   Callout,
 } from "@tremor/react";
 
-import UrlOutput from "../components/UrlOutput";
-import UrlInput from "../components/UrlInput";
+import UrlOutput from "./components/UrlOutput";
+import UrlInput from "./components/UrlInput";
 
 export default function Home() {
-  const [analysis, setAnalysis] = useState(null);
+  const [analysis, setAnalysis] = useState("");
 
   const handleData = (fetchedData) => {
-    setAnalysis(fetchedData);
+    setAnalysis(fetchedData.data);
   };
 
   return (
