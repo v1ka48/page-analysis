@@ -8,6 +8,23 @@ from selenium import webdriver
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
+import traceback 
+import os
+
+def save_html(url, output_html_path):
+    response = requests.get(url)
+    response.raise_for_status()
+    
+        # Print the first 100 characters of the HTML content to verify it's correct
+    print(response.text[:100])  # This prints a snippet of the HTML for verification
+    
+    # Use 'with' statement to open the file, write content, and then flush and close the file
+    with open(output_html_path, "w", encoding='utf-8') as file:
+        file.write(response.text)
+        file.flush()  # Ensure all data is flushed to the file buffer
+    # The 'with' block ensures the file is closed properly
+
+    return response.text
 
 def setup_driver():
     options = Options()
@@ -77,6 +94,18 @@ def scrapeTextScreenshot(url):
     output_image_path = "../output/full_screenshot.png"
     driver = setup_driver()
 
+    output_html_path = "../output/page.html"  
+    print(f'Saving HTML content to: {os.path.abspath(output_html_path)}')
+
+    print('Saving HTML content...')
+    try:
+        html_content = save_html(url, output_html_path)
+        print(f'HTML content snippet: {html_content[:100]}')
+        print('HTML content saved.')
+    except Exception as e:
+        print(f'An error occurred while saving HTML content: {e}')
+
+
     metaTags = getMetaTags(url, output_tags_path)
     content = scrape_text(url, output_text_path)
     take_screenshot(driver, url, output_image_path)
@@ -88,3 +117,4 @@ if __name__ == "__main__":
         scrapeTextScreenshot(sys.argv[1])
     else:
         scrapeTextScreenshot('https://www.intigriti.com/companies')
+
