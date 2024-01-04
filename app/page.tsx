@@ -1,18 +1,11 @@
 "use client";
 
 import React, { useState } from "react";
-import {
-  Card,
-  Text,
-  Subtitle,
-  Divider,
-  Button,
-  TextInput,
-  Callout,
-} from "@tremor/react";
 
+import "./styles/global.scss";
 import UrlOutput from "./components/UrlOutput";
 import UrlInput from "./components/UrlInput";
+import Header from "./components/Header";
 
 interface FetchedData {
   data: any; // Replace 'any' with the type of 'data'
@@ -28,19 +21,10 @@ export default function Home() {
 
   return (
     <main>
-      <Card>
-        <Text className="text-6xl text-center mb-10">Page Analysis</Text>
-        <Subtitle className="text-xl text-center">
-          Presented by Tomas Seliokas and Viktorija Seliokaite
-        </Subtitle>
-      </Card>
-      <Callout title="What is this?">
-        This is a web application that analyzes a given web page and returns the
-        results of the analysis.
-      </Callout>
-      <Card>
+      <div className="flex justify-between mt-40">
         <UrlInput onDataFetch={handleData} />
-      </Card>
+        <Header />
+      </div>
       {analysis && <UrlOutput analysis={analysis} />}
     </main>
   );

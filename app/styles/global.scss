@@ -1,0 +1,20 @@
+$primary-blue: #1C7EFC;
+$secondary-green: #7CE58D;
+$light-blue: #56CCF2;
+$dark-green : #3AB981;
+$neutral-grey: #333;
+$white: #fff;
+$dark-navy-background: #00193B;
+
+// For headings and titles
+$primary-typography: 'Helvetica Neue', arial;
+// For body copy and descriptive text
+$secondary-typography: 'Open Sans', sans-serif; 
+
+
+
+body {
+  background-color: $dark-navy-background;
+  color: $white;
+  font-family: $primary-typography;
+}

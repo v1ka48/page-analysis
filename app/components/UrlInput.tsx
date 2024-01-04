@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { Formik, Form, Field, ErrorMessage, FormikHelpers } from "formik";
 import * as Yup from "yup";
 import { SearchIcon } from "@heroicons/react/outline";
-import { Text, TextInput, Button } from "@tremor/react";
-import { on } from "events";
+
+import Input from "./atoms/Input";
 
 export default function UrlInput({ onDataFetch }: any) {
   const handleSubmit = async (values: Values) => {
@@ -42,7 +42,7 @@ export default function UrlInput({ onDataFetch }: any) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="w-1/3 mt-28 ml-24 p-5">
       <Formik
         initialValues={{ url: "", passcode: 0 }}
         validationSchema={validationSchema}
@@ -50,24 +50,28 @@ export default function UrlInput({ onDataFetch }: any) {
       >
         {(formik) => (
           <Form>
-            <div className="flex-col space-y-2">
-              <Text>One Time Passcode</Text>
-              <Field
-                as={TextInput}
-                type="passcode"
+            <div className="flex flex-col space-y-6 items-center justify-center w-full">
+              <Input
+                className="w-full"
+                label="OTP (One Time Passcode)"
                 name="passcode"
                 placeholder="123456"
+                required={true}
               />
-              <Text>Enter URL</Text>
-              <Field
-                as={TextInput}
-                type="url"
-                name="url"
-                placeholder="https://www.google.com/?client=safari"
+              <Input
+                className="w-full"
+                label="Page URL"
+                id="url"
+                placeholder="https://www.example.com"
+                required={true}
               />
-              <Button icon={SearchIcon} type="submit" variant="primary">
-                Analyze
-              </Button>
+              <button
+                className="bg-dark-green hover:bg-secondary-green text-white py-2 px-4 rounded items-center"
+                type="submit"
+              >
+                <SearchIcon className="h-5 w-5 inline-block pr-1" />
+                <span>Get your score</span>
+              </button>
             </div>
           </Form>
         )}
