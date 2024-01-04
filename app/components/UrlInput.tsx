@@ -44,7 +44,7 @@ export default function UrlInput({ onDataFetch }: any) {
   return (
     <div className="space-y-4">
       <Formik
-        initialValues={{ url: "", passcode: "" }}
+        initialValues={{ url: "", passcode: 0 }}
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >

@@ -14,10 +14,15 @@ import {
 import UrlOutput from "./components/UrlOutput";
 import UrlInput from "./components/UrlInput";
 
+interface FetchedData {
+  data: any; // Replace 'any' with the type of 'data'
+}
+
 export default function Home() {
   const [analysis, setAnalysis] = useState("");
 
-  const handleData = (fetchedData) => {
+  const handleData = (fetchedData: FetchedData) => {
+    console.log(fetchedData);
     setAnalysis(fetchedData.data);
   };
 
