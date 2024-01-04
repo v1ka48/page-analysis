@@ -31,5 +31,5 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 ## Deployed on Vercel
 
-Check out or page live on page-analysis.vercel.app
+Check out or page live on [PageOpti](page-analysis.vercel.app)
 
