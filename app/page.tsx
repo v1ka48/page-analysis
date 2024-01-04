@@ -22,21 +22,24 @@ export default function Home() {
   };
 
   return (
-    <main>
-      <Card>
-        <Text className="text-6xl text-center mb-10">Page Analysis</Text>
-        <Subtitle className="text-xl text-center">
-          Presented by Tomas Seliokas and Viktorija Seliokaite
-        </Subtitle>
-      </Card>
-      <Callout title="What is this?">
-        This is a web application that analyzes a given web page and returns the
-        results of the analysis.
-      </Callout>
-      <Card>
+    <div>
+      <header className="text-white bg-[#00193B] p-4 text-center">
+        <div className="logo"> {/* Place your logo here */} </div>
+      </header>
+      <div className="hero bg-[#56CCF2] text-center p-5 text-[#333]">
+        <h1 className="text-3xl font-bold">Make Every Visit Count</h1>
+        <p className="mt-3">Boost conversions and user engagement with PageOpti's real-time landing page analytics</p>
+      </div>
+      <div id="website-grader-form" className="mt-5 p-4">
         <UrlInput onDataFetch={handleData} />
-      </Card>
+      </div>
+      <div className="grading-section my-5">
+        {/* Include grading section content here */}
+      </div>
       {analysis && <UrlOutput analysis={analysis} />}
-    </main>
+      <footer className="bg-[#00193B] text-white p-4 text-center">
+        {/* Footer content */}
+      </footer>
+    </div>
   );
 }

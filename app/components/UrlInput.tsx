@@ -42,36 +42,38 @@ export default function UrlInput({ onDataFetch }: any) {
   }
 
   return (
-    <div className="space-y-4">
-      <Formik
-        initialValues={{ url: "", passcode: "" }}
-        validationSchema={validationSchema}
-        onSubmit={handleSubmit}
-      >
-        {(formik) => (
-          <Form>
-            <div className="flex-col space-y-2">
-              <Text>One Time Passcode</Text>
-              <Field
-                as={TextInput}
-                type="passcode"
-                name="passcode"
-                placeholder="123456"
-              />
-              <Text>Enter URL</Text>
-              <Field
-                as={TextInput}
-                type="url"
-                name="url"
-                placeholder="https://www.google.com/?client=safari"
-              />
-              <Button icon={SearchIcon} type="submit" variant="primary">
-                Analyze
-              </Button>
-            </div>
-          </Form>
-        )}
-      </Formik>
-    </div>
-  );
+    <div className="space-y-4 p-4">
+    <Formik
+      initialValues={{ url: "", passcode: "" }}
+      validationSchema={validationSchema}
+      onSubmit={handleSubmit}
+    >
+      {(formik) => (
+        <Form className="flex flex-col items-center">
+          <Field
+            as={TextInput}
+            type="number"
+            name="passcode"
+            placeholder="Enter passcode"
+            className="w-full p-2 border-2 border-[#7CE58D] mb-4"
+          />
+          <ErrorMessage name="passcode" component="div" />
+          
+          <Field
+            as={TextInput}
+            type="url"
+            name="url"
+            placeholder="Website address"
+            className="w-full p-2 border-2 border-[#7CE58D] mb-4"
+          />
+          <ErrorMessage name="url" component="div" />
+
+          <Button type="submit" className="bg-[#1C7EFC] text-white py-2 px-4">
+            Get your score
+          </Button>
+        </Form>
+      )}
+    </Formik>
+  </div>
+);
 }
